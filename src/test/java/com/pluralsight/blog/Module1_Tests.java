@@ -1,53 +1,136 @@
-//package com.pluralsight.blog;
-//
-//import com.pluralsight.blog.model.Post;
-//import com.pluralsight.blog.data.PostRepository;
-//import org.junit.Before;
-//import org.junit.Test;
-//import org.junit.runner.RunWith;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.boot.test.context.SpringBootTest;
-//import org.springframework.data.jpa.repository.JpaRepository;
-//import org.springframework.test.context.junit4.SpringRunner;
-//
-//import javax.persistence.*;
-//import java.lang.annotation.Annotation;
-//import java.lang.reflect.Field;
-//import java.util.ArrayList;
-//import java.util.Arrays;
-//import java.util.List;
-//
-//import static org.junit.Assert.*;
-//
-//@RunWith(SpringRunner.class)
-//@SpringBootTest
-////@AutoConfigureMockMvc
-////@PrepareForTest(BlogController.class)
-//public class Module1_Tests {
-//
-////    @Autowired
-////    private MockMvc mvc;
-//
-//    @Autowired
-//    private PostRepository postRepository;
-//
-////    @Autowired
-////    private BlogController blogController;
-////
-////    private Class c = null;
-////    private Method method = null;
-////    private boolean methodParametersExist = false;
-//
-//    @Before
-//    public void setup() {
-////        try {
-////            MvcResult result  = this.mvc.perform(get("/")).andReturn();
-////        } catch (Exception e) {
-////            e.printStackTrace();
-////        }
-//    }
-//
-//
+package com.pluralsight.blog;
+
+import com.pluralsight.blog.data.DatabaseLoader;
+import com.pluralsight.blog.model.Post;
+import com.pluralsight.blog.data.PostRepository;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.DefaultApplicationArguments;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.test.context.junit4.SpringRunner;
+
+import javax.persistence.*;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.*;
+
+@RunWith(SpringRunner.class)
+@SpringBootTest
+//@AutoConfigureMockMvc
+@PrepareForTest(DatabaseLoader.class)
+public class Module1_Tests {
+
+    @Autowired
+    private DatabaseLoader databaseLoader;
+
+    @Autowired
+    private PostRepository postRepository;
+
+    private PostRepository spyRepository;
+
+    @Before
+    public void setup() {
+        Constructor<DatabaseLoader> constructor = null;
+        try {
+            constructor = DatabaseLoader.class.getDeclaredConstructor(PostRepository.class);
+        } catch (NoSuchMethodException e) {
+            //e.printStackTrace();
+        }
+
+        spyRepository = Mockito.spy(postRepository);
+        try {
+            databaseLoader = constructor.newInstance(spyRepository); //new BlogController(spyRepository);
+        } catch (Exception e) {
+            //e.printStackTrace();
+        }
+    }
+
+
+    @Test
+    public void task_1() {
+        Class c = PostRepository.class;
+        Class[] interfaces = c.getInterfaces();
+
+        assertEquals("Task 1: PostRepository should extend 1 interface - JpaRepository.",
+                1, interfaces.length);
+
+        assertEquals("Task 1: PostRepository should be an interface that extends JpaRepository<Post, Long>.",
+                JpaRepository.class, interfaces[0]);
+    }
+
+    @Test
+    public void task_2() {
+        // Task 1 - Add field PostRepository postRepository; to DatabaseLoader
+        Field[] fields = DatabaseLoader.class.getDeclaredFields();
+
+        boolean postRepositoryExists = false;
+        boolean annotationExists = false;
+        for (Field field : fields) {
+            if (field.getName().equals("postRepository") && field.getType().equals(PostRepository.class)) {
+                postRepositoryExists = true;
+            }
+        }
+
+        String message = "Task 2: A field called postRepository of type PostRepository does not exist in DatabaseLoader.";
+        assertTrue(message, postRepositoryExists);
+
+        // Check for DatabaseLoader constructor with PostRepository parameter
+        Constructor<DatabaseLoader> constructor = null;
+        try {
+            constructor = DatabaseLoader.class.getDeclaredConstructor(PostRepository.class);
+        } catch (NoSuchMethodException e) {
+            //e.printStackTrace();
+        }
+
+        message = "Task 2: A DatabaseLoader constructor with a PostRepository parameter does not exist.";
+        assertNotNull(message, constructor);
+
+        Annotation[] annotations = {};
+        // Check for @Autowired
+        try {
+            annotations =
+                    DatabaseLoader.class.getDeclaredConstructor(PostRepository.class).getDeclaredAnnotations();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+
+        assertTrue("There should be 1 annotation, @Autowired, on the DatabaseLoader class.", annotations.length == 1);
+
+        assertEquals("The annotation on the DatabaseLoader constructor is not of type @Autowired.", Autowired.class,annotations[0].annotationType());
+    }
+
+    @Test
+    public void task_3() {
+
+        Mockito.when(spyRepository.saveAll(databaseLoader.randomPosts)).thenReturn(null);
+        try {
+            databaseLoader.run(new DefaultApplicationArguments(new String[]{}));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        boolean calledSaveAll = false;
+        try {
+            Mockito.verify(spyRepository).saveAll(databaseLoader.randomPosts);
+            calledSaveAll = true;
+        } catch (Error e) {
+            //e.printStackTrace();
+        }
+
+        String message = "Task 3: Did not call PostRepository's `saveAll()` in DatabaseLoader's run() method.";
+        assertTrue(message, calledSaveAll);
+    }
+
 //    @Test
 //    public void task_1() {
 //        // Verify @Entity annotation
@@ -169,5 +252,5 @@
 //
 //        assertTrue("The titles loaded from data-categories.sql do not match the expected titles.", titlesMatch);
 //    }
-//
-//}
+
+}
