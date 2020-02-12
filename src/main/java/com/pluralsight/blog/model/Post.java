@@ -15,13 +15,14 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
-    private String lead;
     @Column(length=1000000)
     @Lob
     private String body;
     @Temporal(TemporalType.DATE)
     @CreationTimestamp
     private Date date;
+    @ManyToOne
+    private Author author;
 
     public Post() {
         super();
@@ -68,5 +69,35 @@ public class Post {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        Post inputPost = (Post)obj;
+        if (!this.title.equals(inputPost.getTitle())){
+            System.out.println("titles not equal");
+            return false;
+        }
+        if (!this.body.equals(inputPost.getBody())){
+            System.out.println("body not equal");
+            return false;}
+        if (!this.author.equals(inputPost.getAuthor())){
+            System.out.println("author not equal");
+            return false;}
+//        if (this.date.getDay()==inputPost.getDate().getDay() &&
+//                this.date.getMonth()==inputPost.getDate().getMonth() &&
+//                this.date.getYear()==inputPost.getDate().getYear()){
+//            System.out.println("date not equal");
+//            return false;}
+
+        return true;
+    }
+
+    public Author getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(Author author) {
+        this.author = author;
     }
 }

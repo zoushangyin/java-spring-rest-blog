@@ -3,6 +3,7 @@ package com.pluralsight.blog;
 import com.pluralsight.blog.data.DatabaseLoader;
 import com.pluralsight.blog.model.Post;
 import com.pluralsight.blog.data.PostRepository;
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,9 +16,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.persistence.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -129,6 +137,35 @@ public class Module1_Tests {
 
         String message = "Task 3: Did not call PostRepository's `saveAll()` in DatabaseLoader's run() method.";
         assertTrue(message, calledSaveAll);
+    }
+
+    @Test
+    public void task_4() {
+        // Replace data-categories.sql file to add Categories
+        // Open data-categories.sql file and check contents
+        Path path = Paths.get("src/main/resources/application.properties");
+        String result = "";
+        try {
+            final String output = "";
+            List<String> allLines = Files.readAllLines(path);
+            result = String.join("\n", allLines);
+        } catch (IOException e) {
+            //e.printStackTrace();
+        }
+
+        assertTrue("Task 6: The `data.sql` file is not the same as `data-categories.sql`.", result.contains("spring.data.rest.default-page-size=8"));
+    }
+
+    @Test
+    public void task_5() {
+        Method method = null;
+        try {
+            method = PostRepository.class.getMethod("findByTitleContaining", String.class);
+        } catch (Exception e) {
+            ////e.printStackTrace();
+        }
+
+        assertNotNull("Task 5: The method findByTitleContaining() doesn't exist in the PostRepository class.", method );
     }
 
 //    @Test
