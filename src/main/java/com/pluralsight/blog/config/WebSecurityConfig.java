@@ -1,4 +1,4 @@
-package com.pluralsight.blog;
+package com.pluralsight.blog.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

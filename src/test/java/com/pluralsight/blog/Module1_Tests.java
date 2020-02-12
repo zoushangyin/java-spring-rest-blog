@@ -153,7 +153,7 @@ public class Module1_Tests {
             //e.printStackTrace();
         }
 
-        assertTrue("Task 6: The `data.sql` file is not the same as `data-categories.sql`.", result.contains("spring.data.rest.default-page-size=8"));
+        assertTrue("Task 6: The `application.properties` file doesn't contain `spring.data.rest.default-page-size=8`.", result.contains("spring.data.rest.default-page-size=8"));
     }
 
     @Test
