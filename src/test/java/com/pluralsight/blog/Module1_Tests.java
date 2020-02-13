@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.DefaultApplicationArguments;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.persistence.*;
@@ -166,5 +167,23 @@ public class Module1_Tests {
         }
 
         assertNotNull("Task 5: The method `findByTitleContaining()` doesn't exist in the `PostRepository` class.", method );
+    }
+
+    @Test
+    public void task_6() {
+        Method method = null;
+        try {
+            method = PostRepository.class.getMethod("findByTitleContaining", String.class);
+        } catch (Exception e) {
+            ////e.printStackTrace();
+        }
+
+        assertNotNull("Task 5: The method `findByTitleContaining()` doesn't exist in the `PostRepository` class.", method );
+
+        Annotation[] annotations = method.getDeclaredAnnotations();
+        assertTrue("Task 2: There should be 1 annotation, `@Autowired`, on the `DatabaseLoader` constructor.", annotations.length == 1);
+
+        assertEquals("Task 2: The method `findByTitleContaining()` doesn't have the `@RestResource` annotation.", RestResource.class, annotations[0].annotationType());
+        assertTrue("Task 2: The `@RestResource` annotation doesn't have `(rel = \"contains-title\", path = \"containsTitle\")`.", annotations[0].toString().contains("rel=\"contains-title\"") && annotations[0].toString().contains("path=\"containsTitle\""));
     }
 }
