@@ -274,12 +274,13 @@ public class Module2_Tests {
         boolean authorsEqual = false;
         for (int i = 0; i< authors.size(); i++) {
             try {
-                if (authors.get(i).equals(authorsSaved.get(i)) && haveSamePosts(authors.get(i),authorsSaved.get(i))) {
+                if (authors.get(i).equals(authorsSaved.get(i))){// && haveSamePosts(authors.get(i),authorsSaved.get(i))) {
                     authorsEqual = true;
                 }
                 else
                     authorsEqual = false;
             } catch (org.hibernate.LazyInitializationException e) {
+                e.printStackTrace();
                 assertTrue("Task 2: The author's `@ManyToOne` annotation does not have `(fetch = FetchType.EAGER)`.", false);
             } catch (IndexOutOfBoundsException e){
                 authorsEqual = false;
@@ -290,6 +291,8 @@ public class Module2_Tests {
     }
 
     private boolean haveSamePosts(Author author1, Author author2) {
+        Hibernate.initialize(author1.getPosts());
+        Hibernate.initialize(author2.getPosts());
         try {
             if (author1.getPosts().size() != author2.getPosts().size())
                 return false;
