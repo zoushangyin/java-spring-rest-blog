@@ -7,6 +7,7 @@ import com.pluralsight.blog.model.Author;
 import com.pluralsight.blog.model.Post;
 import com.pluralsight.blog.data.PostRepository;
 import org.apache.commons.io.IOUtils;
+import org.hibernate.Hibernate;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -242,7 +243,14 @@ public class Module2_Tests {
 
             String title = String.format(template, gadget);
             Post post = new Post(title, "Lorem ipsum dolor sit amet, consectetur adipiscing elit… ");
-            post.setAuthor(author);
+            // post.setAuthor(author);
+            try {
+                Method method = Post.class.getMethod("setAuthor", Author.class);
+                method.invoke(post, author);
+            } catch (Exception e) {
+                assertTrue("Task 6: The Post class does not have a setAuthor() method.", false);
+            }
+
             author.addPost(post);
             postsSaved.add(post);
         });
@@ -251,7 +259,7 @@ public class Module2_Tests {
         boolean postsEqual = false;
         for (int i = 0; i< posts.size(); i++) {
             try {
-                if (posts.get(i).equals(postsSaved.get(i)))
+                if (checkPostsEqual(posts.get(i), postsSaved.get(i))) //posts.get(i).equals(postsSaved.get(i)))
                     postsEqual = true;
                 else
                     postsEqual = false;
@@ -266,7 +274,7 @@ public class Module2_Tests {
         boolean authorsEqual = false;
         for (int i = 0; i< authors.size(); i++) {
             try {
-                if (authors.get(i).equals(authorsSaved.get(i)) && authors.get(i).hasSamePosts(authorsSaved.get(i))) {
+                if (authors.get(i).equals(authorsSaved.get(i)) && haveSamePosts(authors.get(i),authorsSaved.get(i))) {
                     authorsEqual = true;
                 }
                 else
@@ -279,6 +287,38 @@ public class Module2_Tests {
         }
 
         assertTrue("Task 6: The authors saved to AuthorRepository are not correct", authorsEqual);
+    }
+
+    private boolean haveSamePosts(Author author1, Author author2) {
+        try {
+            if (author1.getPosts().size() != author2.getPosts().size())
+                return false;
+
+            for (int i = 0; i < author1.getPosts().size(); i++) {
+                if (!author1.getPosts().get(i).equals(author2.getPosts().get(i)))
+                    return false;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean checkPostsEqual(Post post1, Post post2) {
+        if (!post1.getTitle().equals(post2.getTitle()))
+            return false;
+        if (!post1.getBody().equals(post2.getBody()))
+            return false;
+        try {
+            Method method = Post.class.getMethod("getAuthor");
+            Author author1 = (Author)method.invoke(post1);
+            Author author2 = (Author)method.invoke(post2);
+            if (!author1.equals(author2))
+                return false;
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
     }
 
     @Test

@@ -5,6 +5,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.lang.reflect.Method;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -16,10 +17,6 @@ public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Version
-    private Long version;
-    @NotNull
-    @Size(min=4, max=100)
     private String title;
     @Column(length=1000000)
     @Lob
@@ -27,8 +24,6 @@ public class Post {
     @Temporal(TemporalType.DATE)
     @CreationTimestamp
     private Date date;
-    @ManyToOne
-    private Author author;
 
     public Post() {
         super();
@@ -75,35 +70,5 @@ public class Post {
 
     public void setDate(Date date) {
         this.date = date;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        Post inputPost = (Post)obj;
-        if (!this.title.equals(inputPost.getTitle())){
-            System.out.println("titles not equal");
-            return false;
-        }
-        if (!this.body.equals(inputPost.getBody())){
-            System.out.println("body not equal");
-            return false;}
-        if (!this.author.equals(inputPost.getAuthor())){
-            System.out.println("author not equal");
-            return false;}
-//        if (this.date.getDay()==inputPost.getDate().getDay() &&
-//                this.date.getMonth()==inputPost.getDate().getMonth() &&
-//                this.date.getYear()==inputPost.getDate().getYear()){
-//            System.out.println("date not equal");
-//            return false;}
-
-        return true;
-    }
-
-    public Author getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(Author author) {
-        this.author = author;
     }
 }

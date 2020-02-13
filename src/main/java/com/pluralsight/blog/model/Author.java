@@ -16,20 +16,13 @@ public class Author {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Version
-    private Long version;
     private String firstname;
     private String lastname;
-    @JsonIgnore
     private String username;
-    @JsonIgnore
     private String password;
-    @OneToMany(fetch = FetchType.EAGER)
-    private List<Post> posts;
 
     public Author() {
         super();
-        posts = new ArrayList<>();
     }
 
     public Author(String username, String firstname, String lastname, String password) {
@@ -91,32 +84,11 @@ public class Author {
         return true;
     }
 
-    public boolean hasSamePosts(Object obj) {
-        Author inputAuthor = (Author)obj;
-        Hibernate.initialize(posts);
-        System.out.println("posts init = " + Hibernate.isInitialized(posts));
-        System.out.println("inputAuthor.getPosts() init = " + Hibernate.isInitialized(inputAuthor.getPosts()));
-        for (int i = 0; i< inputAuthor.getPosts().size(); i++) {
-            if (!posts.get(i).equals(inputAuthor.getPosts().get(i)))
-                return false;
-        }
-        return true;
-    }
-
     public List<Post> getPosts() {
-        return posts;
+        return null;
     }
 
     public void addPost(Post post) {
-        posts.add(post);
-    }
-
-    @Override
-    public String toString() {
-        String info = firstname + ", " + lastname + ", " + username + ", " + password + "\n";
-//        String postStr = posts.stream()
-//                .map( i -> i.toString() )
-//                .collect( Collectors.joining( "," ) );
-        return info;// + postStr;
+        return;
     }
 }
