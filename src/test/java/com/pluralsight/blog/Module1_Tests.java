@@ -69,10 +69,10 @@ public class Module1_Tests {
         Class c = PostRepository.class;
         Class[] interfaces = c.getInterfaces();
 
-        assertEquals("Task 1: PostRepository should extend 1 interface - JpaRepository.",
+        assertEquals("Task 1: `PostRepository` should extend 1 interface - `JpaRepository`.",
                 1, interfaces.length);
 
-        assertEquals("Task 1: PostRepository should be an interface that extends JpaRepository<Post, Long>.",
+        assertEquals("Task 1: `PostRepository` should be an `interface` that extends `JpaRepository<Post, Long>`.",
                 JpaRepository.class, interfaces[0]);
     }
 
@@ -89,7 +89,7 @@ public class Module1_Tests {
             }
         }
 
-        String message = "Task 2: A field called postRepository of type PostRepository does not exist in DatabaseLoader.";
+        String message = "Task 2: A field called `postRepository` of type `PostRepository` does not exist in `DatabaseLoader`.";
         assertTrue(message, postRepositoryExists);
 
         // Check for DatabaseLoader constructor with PostRepository parameter
@@ -100,7 +100,7 @@ public class Module1_Tests {
             //e.printStackTrace();
         }
 
-        message = "Task 2: A DatabaseLoader constructor with a PostRepository parameter does not exist.";
+        message = "Task 2: A `DatabaseLoader` constructor with a `PostRepository` parameter does not exist.";
         assertNotNull(message, constructor);
 
         Annotation[] annotations = {};
@@ -112,9 +112,9 @@ public class Module1_Tests {
             e.printStackTrace();
         }
 
-        assertTrue("There should be 1 annotation, @Autowired, on the DatabaseLoader class.", annotations.length == 1);
+        assertTrue("Task 2: There should be 1 annotation, `@Autowired`, on the `DatabaseLoader` constructor.", annotations.length == 1);
 
-        assertEquals("The annotation on the DatabaseLoader constructor is not of type @Autowired.", Autowired.class,annotations[0].annotationType());
+        assertEquals("Task 2: The annotation on the `DatabaseLoader` constructor is not of type `@Autowired.", Autowired.class, annotations[0].annotationType());
     }
 
     @Test
@@ -135,7 +135,7 @@ public class Module1_Tests {
             //e.printStackTrace();
         }
 
-        String message = "Task 3: Did not call PostRepository's `saveAll()` in DatabaseLoader's run() method.";
+        String message = "Task 3: Did not call the `PostRepository` `saveAll()` in the `DatabaseLoader` `run()` method.";
         assertTrue(message, calledSaveAll);
     }
 
@@ -165,6 +165,6 @@ public class Module1_Tests {
             ////e.printStackTrace();
         }
 
-        assertNotNull("Task 5: The method findByTitleContaining() doesn't exist in the PostRepository class.", method );
+        assertNotNull("Task 5: The method `findByTitleContaining()` doesn't exist in the `PostRepository` class.", method );
     }
 }
