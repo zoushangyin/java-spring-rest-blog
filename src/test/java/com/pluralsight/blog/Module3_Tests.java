@@ -23,6 +23,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Version;
 import javax.validation.ConstraintViolationException;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -114,13 +115,14 @@ public class Module3_Tests {
 
         Annotation[] annotations = field.getDeclaredAnnotations();
 
-        message = "Task 3: The field `title` should have 1 annotation - the `@NotNull` annotation.";
-        assertEquals(message, 1, annotations.length);
-        assertEquals(message, NotNull.class, annotations[0].annotationType());
+        message = "Task 3: The field `title` should have 2 annotations - `@NotNull` and `@Size(min=4, max=100)`.";
+        assertEquals(message, 2, annotations.length);
+        assertTrue(message, annotations[0].annotationType().equals(NotNull.class) || annotations[1].annotationType().equals(NotNull.class));
+        assertTrue(message, annotations[0].annotationType().equals(Size.class) || annotations[1].annotationType().equals(Size.class));
     }
 
     @Test
-    public void task_4(){
+    public void task_4() {
         Class c = RestConfig.class;
         Class[] interfaces = c.getInterfaces();
 
@@ -134,14 +136,6 @@ public class Module3_Tests {
         Annotation[] annotations = RestConfig.class.getDeclaredAnnotations();
         assertEquals(message, 1, annotations.length);
         assertEquals(message, Configuration.class, annotations[0].annotationType());
-
-        // Check for @Override public void configureValidatingRepositoryEventListener(ValidatingRepositoryEventListener validatingListener)
-        Method configureMethod = null;
-        String msg = "Task 4: The configureValidatingRepositoryEventListener() method does not exist in the RestConfig class.";
-        try {
-            configureMethod = RestConfig.class.getMethod("configureValidatingRepositoryEventListener", ValidatingRepositoryEventListener.class);
-        } catch (NoSuchMethodException e) { }
-        assertNotNull(msg, configureMethod);
     }
 
     @Test
@@ -166,7 +160,20 @@ public class Module3_Tests {
     }
 
     @Test
-    public void task_6() {
+    public void task_6(){
+        // Check for @Override public void configureValidatingRepositoryEventListener(ValidatingRepositoryEventListener validatingListener)
+        Method configureMethod = null;
+        String msg = "Task 4: The configureValidatingRepositoryEventListener() method does not exist in the RestConfig class.";
+        try {
+            configureMethod = RestConfig.class.getMethod("configureValidatingRepositoryEventListener", ValidatingRepositoryEventListener.class);
+        } catch (NoSuchMethodException e) { }
+        assertNotNull(msg, configureMethod);
+    }
+
+
+
+    @Test
+    public void task_7() {
         boolean constraintCaught = false;
         try {
             postRepository.save(new Post("S", "blah"));
