@@ -5,17 +5,18 @@ import com.pluralsight.blog.model.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Component
 public class PostRepository {
     public List<Post> findAll() {
-        return null;
+        return new ArrayList<>();
     }
 
     public List<Post> saveAll(List<Post> posts) {
-        return null;
+        return new ArrayList<>();
     }
 
     public Post save(Post post) {
