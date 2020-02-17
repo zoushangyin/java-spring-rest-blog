@@ -42,16 +42,16 @@ import static org.junit.Assert.*;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 //@AutoConfigureMockMvc
-@PrepareForTest(DatabaseLoader.class)
+//@PrepareForTest(DatabaseLoader.class)
 public class Module2_Tests {
 
-    @Autowired
-    private DatabaseLoader databaseLoader;
+    //@Autowired
+    //private DatabaseLoader databaseLoader;
 
     @Autowired
     private AuthorRepository authorRepository;
 
-    private AuthorRepository spyRepository;
+    //private AuthorRepository spyRepository;
 
     @Autowired
     private PostRepository postRepository;
@@ -65,12 +65,12 @@ public class Module2_Tests {
             //e.printStackTrace();
         }
 
-        spyRepository = Mockito.spy(authorRepository);
-        try {
-            databaseLoader = constructor.newInstance(postRepository, spyRepository);
-        } catch (Exception e) {
-            //e.printStackTrace();
-        }
+        //spyRepository = Mockito.spy(authorRepository);
+//        try {
+//            databaseLoader = constructor.newInstance(postRepository, spyRepository);
+//        } catch (Exception e) {
+//            //e.printStackTrace();
+//        }
     }
 
 
@@ -106,7 +106,6 @@ public class Module2_Tests {
         message = "Task 2: The field author should have 1 annotation - the @ManyToOne annotation.";
         assertEquals(message, 1, annotations.length);
         assertEquals(message, ManyToOne.class, annotations[0].annotationType());
-        System.out.println(annotations[0]);
         assertTrue("Task 2: The author's `@ManyToOne` annotation does not have `(fetch = FetchType.EAGER)`.", annotations[0].toString().contains("EAGER"));
 
         // Check for getter
@@ -201,27 +200,31 @@ public class Module2_Tests {
 
     @Test
     public void task_5() {
-        Mockito.when(spyRepository.saveAll(databaseLoader.authors)).thenReturn(null);
-        try {
-            databaseLoader.run(new DefaultApplicationArguments(new String[]{}));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        List<Author> authorsSaved = Arrays.asList(
+                new Author("sholderness", "Sarah",  "Holderness", "password"),
+                new Author("tbell", "Tom",  "Bell", "password"),
+                new Author("efisher", "Eric",  "Fisher", "password"),
+                new Author("csouza", "Carlos",  "Souza", "password")
+        );
 
-        boolean calledSaveAll = false;
-        try {
-            Mockito.verify(spyRepository).saveAll(databaseLoader.authors);
-            calledSaveAll = true;
-        } catch (Error e) {
-            //e.printStackTrace();
-        }
+        List<Author> authorsFromRepo = authorRepository.findAll();
 
-        String message = "Task 3: Did not call `authorRepository.saveAll(authors)` in DatabaseLoader's run() method.";
-        assertTrue(message, calledSaveAll);
+        if (authorsFromRepo.size() != authorsSaved.size())
+            assertTrue("Task 5: The authors were not saved to the authorRepository correctly.", false);
+
+        boolean listsEqual = true;
+        for (int i = 0; i< authorsFromRepo.size(); i++) {
+            if (!authorsFromRepo.get(i).equals(authorsSaved.get(i)))
+                listsEqual = false;
+        }
+        assertTrue("Task 5: The authors were not saved to the authorRepository correctly.", listsEqual);
     }
 
     @Test
     public void task_6() {
+        // Needed in Author.java:  (PERSIST not needed)
+        // @OneToMany(/*cascade = CascadeType.PERSIST, */fetch = FetchType.EAGER)
+        // private List<Post> posts;
         String[] templates = {
                 "Smart Home %s", "Mobile %s - For When You're On he Go", "The %s - Your New Favorite Accessory"};
         String[] gadgets = {
@@ -242,7 +245,7 @@ public class Module2_Tests {
             Author author = authorsSaved.get(i % authorsSaved.size());
 
             String title = String.format(template, gadget);
-            Post post = new Post(title, "Lorem ipsum dolor sit amet, consectetur adipiscing elit… ");
+            Post post = new Post(Long.valueOf(i), title, "Lorem ipsum dolor sit amet, consectetur adipiscing elit… ");
             // post.setAuthor(author);
             try {
                 Method method = Post.class.getMethod("setAuthor", Author.class);
@@ -270,7 +273,7 @@ public class Module2_Tests {
 
         assertTrue("Task 6: The posts saved to PostRepository are not correct", postsEqual);
 
-        List<Author> authors = spyRepository.findAll();
+        List<Author> authors = authorRepository.findAll();
         boolean authorsEqual = false;
         for (int i = 0; i< authors.size(); i++) {
             try {
@@ -298,6 +301,8 @@ public class Module2_Tests {
                 return false;
 
             for (int i = 0; i < author1.getPosts().size(); i++) {
+                //if (!author1.getPosts().contains(author2.getPosts().get(i)) ||
+                //        !author2.getPosts().contains(author1.getPosts().get(i)))
                 if (!author1.getPosts().get(i).equals(author2.getPosts().get(i)))
                     return false;
             }

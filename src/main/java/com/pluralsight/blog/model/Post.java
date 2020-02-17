@@ -71,4 +71,13 @@ public class Post {
     public void setDate(Date date) {
         this.date = date;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Post))
+            return false;
+        Post otherPost = (Post)obj;
+        return this.title.equals(otherPost.getTitle()) &&
+               this.body.equals(otherPost.getBody());
+    }
 }
