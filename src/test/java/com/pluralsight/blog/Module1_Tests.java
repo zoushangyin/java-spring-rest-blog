@@ -154,7 +154,7 @@ public class Module1_Tests {
             //e.printStackTrace();
         }
 
-        assertTrue("Task 6: The `application.properties` file doesn't contain `spring.data.rest.default-page-size=8`.", result.contains("spring.data.rest.default-page-size=8"));
+        assertTrue("Task 4: The `application.properties` file doesn't contain `spring.data.rest.default-page-size=8`.", result.contains("spring.data.rest.default-page-size=8"));
     }
 
     @Test
@@ -178,12 +178,18 @@ public class Module1_Tests {
             ////e.printStackTrace();
         }
 
-        assertNotNull("Task 5: The method `findByTitleContaining()` doesn't exist in the `PostRepository` class.", method );
+        assertNotNull("Task 6: The method `findByTitleContaining()` doesn't exist in the `PostRepository` class.", method );
 
         Annotation[] annotations = method.getDeclaredAnnotations();
-        assertTrue("Task 2: There should be 1 annotation, `@Autowired`, on the `DatabaseLoader` constructor.", annotations.length == 1);
+        assertTrue("Task 6: There should be 1 annotation, `@Autowired`, on the `DatabaseLoader` constructor.", annotations.length == 1);
 
-        assertEquals("Task 2: The method `findByTitleContaining()` doesn't have the `@RestResource` annotation.", RestResource.class, annotations[0].annotationType());
-        assertTrue("Task 2: The `@RestResource` annotation doesn't have `(rel = \"contains-title\", path = \"containsTitle\")`.", annotations[0].toString().contains("rel=\"contains-title\"") && annotations[0].toString().contains("path=\"containsTitle\""));
+        assertEquals("Task 6: The method `findByTitleContaining()` doesn't have the `@RestResource` annotation.", RestResource.class, annotations[0].annotationType());
+        
+        boolean contains_title_present = annotations[0].toString().replaceAll("/s", "").contains("rel=\"contains-title\"") ||
+                annotations[0].toString().replaceAll("/s", "").contains("rel=contains-title");
+        boolean containsTitle_present = annotations[0].toString().replaceAll("/s", "").contains("path=\"containsTitle\"") ||
+                annotations[0].toString().replaceAll("/s", "").contains("path=containsTitle");
+        String message = "Task 6: The `@RestResource` annotation is " + annotations[0].toString().replaceAll("/s", "") + " and doesn't have `(rel = \"contains-title\", path = \"containsTitle\")`.";
+        assertTrue(message, contains_title_present && containsTitle_present);
     }
 }
