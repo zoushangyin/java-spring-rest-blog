@@ -25,8 +25,19 @@ public class Post {
     @CreationTimestamp
     private Date date;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Author author;
+
     public Post() {
         super();
+    }
+
+    public Author getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(Author author) {
+        this.author = author;
     }
 
     public Post(String title, String body){//, Author author) {
